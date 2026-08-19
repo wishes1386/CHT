@@ -115,7 +115,13 @@ function buildRuleElement(match) {
 
   const doc = document.createElement("p");
   doc.className = "rule-doc";
-  doc.textContent = `${rule.document}  ${rule.article}`;
+  const docName = document.createElement("span");
+  docName.className = "doc-name";
+  docName.textContent = rule.document;
+  const docArticle = document.createElement("span");
+  docArticle.className = "doc-article";
+  docArticle.textContent = rule.article;
+  doc.append(docName, "  ", docArticle);
 
   const summary = document.createElement("p");
   summary.className = "rule-summary";
