@@ -10,6 +10,10 @@ const resultList = document.getElementById("result-list");
 const countViolated = document.getElementById("count-violated");
 const countPossible = document.getElementById("count-possible");
 const countClean = document.getElementById("count-clean");
+const semanticToggle = document.getElementById("semantic-toggle");
+const semanticStatus = document.getElementById("semantic-status");
+const queryButtonLabel = document.getElementById("query-button-label");
+const ruleCount = document.getElementById("rule-count");
 const reportPrompt = document.getElementById("report-prompt");
 const openReportButton = document.getElementById("open-report");
 const dismissReportButton = document.getElementById("dismiss-report");
@@ -26,6 +30,10 @@ const reportOutput = document.getElementById("report-output");
 
 let lastQuery = "";
 let currentMatches = [];
+let semanticModel = null;
+let ruleEmbeddings = null;
+let semanticError = false;
+let semanticLoading = false;
 
 const REQUIRED = {
   "trade-secret-leak": ["營業秘密", "商業機密", "機密"],
@@ -112,6 +120,84 @@ function matchRules(text) {
   return results;
 }
 
+function cosine(a, b) {
+  let sum = 0;
+  for (let i = 0; i < a.length; i += 1) {
+    sum += a[i] * b[i];
+  }
+  return sum;
+}
+
+async function loadSemanticModel() {
+  if (semanticModel && ruleEmbeddings) {
+    return true;
+  }
+  if (semanticLoading) {
+    return false;
+  }
+  semanticLoading = true;
+  semanticStatus.textContent = "語意模型：載入中，首次使用需下載";
+  try {
+    const { pipeline } = await import("https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.2");
+    semanticModel = await pipeline("feature-extraction", "Xenova/multilingual-e5-small", { quantized: true });
+    ruleEmbeddings = [];
+    for (const rule of window.CHT_POLICIES) {
+      const text = `passage: ${rule.category} ${rule.title} ${rule.summary} ${rule.document} ${rule.article}`;
+      const output = await semanticModel(text, { pooling: "mean", normalize: true });
+      ruleEmbeddings.push(Array.from(output.data));
+    }
+    semanticStatus.textContent = "語意模型：已就緒";
+    return true;
+  } catch (error) {
+    semanticError = true;
+    semanticStatus.textContent = "語意模型：載入失敗，已使用關鍵字比對";
+    return false;
+  } finally {
+    semanticLoading = false;
+  }
+}
+
+async function semanticMatches(text) {
+  if (!semanticModel || !ruleEmbeddings) {
+    return [];
+  }
+  const output = await semanticModel(`query: ${text}`, { pooling: "mean", normalize: true });
+  const queryVector = Array.from(output.data);
+  const results = [];
+  for (let i = 0; i < window.CHT_POLICIES.length; i += 1) {
+    const similarity = cosine(queryVector, ruleEmbeddings[i]);
+    if (similarity >= 0.36) {
+      results.push({ rule: window.CHT_POLICIES[i], status: window.CHT_POLICIES[i].status, hits: 0, score: similarity });
+    }
+  }
+  results.sort((a, b) => b.score - a.score);
+  return results.slice(0, 12);
+}
+
+async function matchAll(text) {
+  const keywordMatches = matchRules(text).map((match) => ({ ...match, source: "keyword", score: match.hits }));
+  const merged = new Map(keywordMatches.map((match) => [match.rule.id, match]));
+
+  if (semanticToggle.checked && !semanticError) {
+    const loaded = await loadSemanticModel();
+    if (loaded) {
+      const semanticResults = await semanticMatches(text);
+      for (const match of semanticResults) {
+        const existing = merged.get(match.rule.id);
+        if (existing) {
+          existing.score = Math.max(existing.score, match.score);
+        } else {
+          merged.set(match.rule.id, { ...match, source: "semantic", status: "possible" });
+        }
+      }
+    }
+  }
+
+  const results = [...merged.values()];
+  results.sort((a, b) => b.score - a.score);
+  return results;
+}
+
 function statusLabel(status) {
   if (status === "violated") return "已違反";
   if (status === "possible") return "可能違反";
@@ -135,6 +221,12 @@ function buildRuleElement(match) {
   badge.textContent = statusLabel(rule.status);
 
   head.append(category, badge);
+  if (match.source === "semantic") {
+    const sourceTag = document.createElement("span");
+    sourceTag.className = "source-tag";
+    sourceTag.textContent = "語意比對";
+    head.append(sourceTag);
+  }
 
   const title = document.createElement("h3");
   title.className = "rule-title";
@@ -242,7 +334,7 @@ function render(matches, inputText, filteredOut) {
   reportPrompt.hidden = false;
 }
 
-function runQuery() {
+async function runQuery() {
   const value = input.value.trim();
   if (!value) {
     input.focus();
@@ -250,19 +342,26 @@ function runQuery() {
   }
 
   lastQuery = value;
-  const rawMatches = matchRules(value);
-  let matches = rawMatches;
-  const selectedCategories = new Set(
-    [...document.querySelectorAll("#category-list input:checked")].map((box) => box.value)
-  );
-  matches = matches.filter((match) => selectedCategories.has(match.rule.category));
-  if (onlyViolated.checked) {
-    matches = matches.filter((match) => match.rule.status === "violated");
+  queryButton.disabled = true;
+  queryButtonLabel.textContent = "判斷中...";
+  try {
+    const rawMatches = await matchAll(value);
+    let matches = rawMatches;
+    const selectedCategories = new Set(
+      [...document.querySelectorAll("#category-list input:checked")].map((box) => box.value)
+    );
+    matches = matches.filter((match) => selectedCategories.has(match.rule.category));
+    if (onlyViolated.checked) {
+      matches = matches.filter((match) => match.rule.status === "violated");
+    }
+    resultsSection.hidden = false;
+    resultsSection.scrollIntoView({ behavior: "smooth", block: "start" });
+    render(matches, value, rawMatches.length > 0 && matches.length === 0);
+    currentMatches = matches;
+  } finally {
+    queryButton.disabled = false;
+    queryButtonLabel.textContent = "執行查詢";
   }
-  resultsSection.hidden = false;
-  resultsSection.scrollIntoView({ behavior: "smooth", block: "start" });
-  render(matches, value, rawMatches.length > 0 && matches.length === 0);
-  currentMatches = matches;
 }
 
 function todayISO() {
@@ -460,17 +559,22 @@ function buildCategoryFilters() {
 function refreshQuery() {
   if (!lastQuery) return;
   input.value = lastQuery;
-  runQuery();
+  void runQuery();
 }
 
 categoryList.addEventListener("change", refreshQuery);
 onlyViolated.addEventListener("change", refreshQuery);
+semanticToggle.addEventListener("change", () => {
+  semanticStatus.textContent = semanticToggle.checked
+    ? (semanticModel ? "語意模型：已就緒" : "語意模型：待載入")
+    : "語意搜尋已停用";
+});
 
-queryButton.addEventListener("click", runQuery);
+queryButton.addEventListener("click", () => void runQuery());
 
 input.addEventListener("keydown", (event) => {
   if ((event.metaKey || event.ctrlKey) && event.key === "Enter") {
-    runQuery();
+    void runQuery();
   }
 });
 
@@ -490,8 +594,9 @@ clearButton.addEventListener("click", () => {
 document.querySelectorAll(".example-chip").forEach((chip) => {
   chip.addEventListener("click", () => {
     input.value = chip.dataset.example;
-    runQuery();
+    void runQuery();
   });
 });
 
 buildCategoryFilters();
+ruleCount.textContent = `${window.CHT_POLICIES.length} 項判斷規則`;
