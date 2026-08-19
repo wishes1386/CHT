@@ -28,8 +28,8 @@ git remote add origin https://github.com/<你的帳號>/CHT.git
 git push -u origin main
 ```
 
-3. 到 repository 的 Settings → Pages，將 Source 設為 `GitHub Actions`。
-4. Push 後 GitHub Actions 會自動部署，網站完成後即可透過 `https://<你的帳號>.github.io/CHT/` 使用。
+3. 到 repository 的 Settings → Pages，將 Source 設為 `Deploy from a branch`，Branch 選 `main` 與 `/ (root)`。
+4. 網站完成後即可透過 `https://<你的帳號>.github.io/CHT/` 使用。
 
 ## 資料說明
 
