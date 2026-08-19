@@ -51,6 +51,8 @@ const NEGATED_PHRASES = [
   "沒有違反", "未違反", "沒有收受", "未收受", "沒有提供", "未提供",
   "沒有交易", "未交易", "沒有參與", "未參與", "沒有利用", "未利用",
   "沒有賄賂", "未賄賂", "沒有性騷擾", "未性騷擾"
+  , "沒有收受回扣", "未收受回扣", "沒有收禮", "未收禮", "沒有行賄", "未行賄",
+  "沒有造假", "未造假", "沒有偽造", "未偽造", "沒有虛報", "未虛報"
 ];
 
 function normalize(text) {
@@ -83,6 +85,17 @@ function matchRules(text) {
       continue;
     }
     if (required && !requiredHit) {
+      continue;
+    }
+    if (rule.requiredGroups) {
+      const groupsOk = rule.requiredGroups.every((group) =>
+        group.some((keyword) => normalized.includes(keyword) && !isNegated(normalized, keyword))
+      );
+      if (!groupsOk) {
+        continue;
+      }
+    }
+    if (rule.negatable && NEGATED_PHRASES.some((phrase) => normalized.includes(phrase) && rule.keywords.some((keyword) => phrase.includes(keyword)))) {
       continue;
     }
 
