@@ -10,8 +10,22 @@ const resultList = document.getElementById("result-list");
 const countViolated = document.getElementById("count-violated");
 const countPossible = document.getElementById("count-possible");
 const countClean = document.getElementById("count-clean");
+const reportPrompt = document.getElementById("report-prompt");
+const openReportButton = document.getElementById("open-report");
+const dismissReportButton = document.getElementById("dismiss-report");
+const reportBuilder = document.getElementById("report-builder");
+const reportCase = document.getElementById("report-case");
+const reportSubject = document.getElementById("report-subject");
+const reportUnit = document.getElementById("report-unit");
+const reportDate = document.getElementById("report-date");
+const reportDesc = document.getElementById("report-desc");
+const reportAuthor = document.getElementById("report-author");
+const generateReportButton = document.getElementById("generate-report");
+const printReportButton = document.getElementById("print-report");
+const reportOutput = document.getElementById("report-output");
 
 let lastQuery = "";
+let currentMatches = [];
 
 const REQUIRED = {
   "trade-secret-leak": ["營業秘密", "商業機密", "機密"],
@@ -181,6 +195,9 @@ function renderNoMatch(filteredOut) {
 
 function render(matches, inputText, filteredOut) {
   resultList.replaceChildren();
+  reportOutput.replaceChildren();
+  reportBuilder.hidden = true;
+  printReportButton.hidden = true;
 
   const violatedCount = matches.filter((m) => m.rule.status === "violated").length;
   const possibleCount = matches.filter((m) => m.rule.status === "possible").length;
@@ -202,12 +219,14 @@ function render(matches, inputText, filteredOut) {
 
   if (matches.length === 0) {
     resultList.append(renderNoMatch(filteredOut));
+    reportPrompt.hidden = true;
     return;
   }
 
   for (const match of matches) {
     resultList.append(buildRuleElement(match));
   }
+  reportPrompt.hidden = false;
 }
 
 function runQuery() {
@@ -230,7 +249,139 @@ function runQuery() {
   resultsSection.hidden = false;
   resultsSection.scrollIntoView({ behavior: "smooth", block: "start" });
   render(matches, value, rawMatches.length > 0 && matches.length === 0);
+  currentMatches = matches;
 }
+
+function todayISO() {
+  const date = new Date();
+  const local = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+  return local.toISOString().slice(0, 10);
+}
+
+function reportId() {
+  const stamp = todayISO().replaceAll("-", "");
+  const time = new Date().toTimeString().slice(0, 2) + new Date().toTimeString().slice(3, 5);
+  return `CHT-RPT-${stamp}-${time}`;
+}
+
+function makeRow(cells) {
+  const tr = document.createElement("tr");
+  for (const cell of cells) {
+    const td = document.createElement("td");
+    td.textContent = cell;
+    tr.append(td);
+  }
+  return tr;
+}
+
+function reportSection(title) {
+  const section = document.createElement("div");
+  section.className = "report-section";
+  const heading = document.createElement("h4");
+  heading.textContent = title;
+  section.append(heading);
+  return section;
+}
+
+function buildReport() {
+  const doc = document.createElement("div");
+  doc.className = "report-document";
+
+  const h3 = document.createElement("h3");
+  h3.textContent = "行為違規查詢報告書";
+  const idLine = document.createElement("p");
+  idLine.className = "report-doc-id";
+  idLine.textContent = `文件編號：${reportId()}`;
+
+  const meta = document.createElement("div");
+  meta.className = "report-meta";
+  const metaItems = [
+    ["案件名稱", reportCase.value.trim() || "行為違規查詢案"],
+    ["查詢日期", reportDate.value || todayISO()],
+    ["被查詢人", reportSubject.value.trim() || "未填寫"],
+    ["單位 / 職稱", reportUnit.value.trim() || "未填寫"],
+    ["填表人", reportAuthor.value.trim() || "未填寫"]
+  ];
+  for (const [label, value] of metaItems) {
+    const span = document.createElement("span");
+    span.textContent = `${label}：${value}`;
+    meta.append(span);
+  }
+
+  const behaviorSection = reportSection("查詢對象與行為描述");
+  const behavior = document.createElement("p");
+  behavior.textContent = reportDesc.value.trim() || lastQuery;
+  behaviorSection.append(behavior);
+
+  const resultSection = reportSection("查詢結果");
+  const summary = document.createElement("p");
+  summary.textContent = summaryText.textContent;
+  const table = document.createElement("table");
+  const thead = document.createElement("thead");
+  const headRow = document.createElement("tr");
+  for (const head of ["判斷", "違反事項", "規範與條文", "理由", "建議處理"]) {
+    const th = document.createElement("th");
+    th.textContent = head;
+    headRow.append(th);
+  }
+  thead.append(headRow);
+  const tbody = document.createElement("tbody");
+  for (const match of currentMatches) {
+    const { rule } = match;
+    tbody.append(makeRow([
+      statusLabel(rule.status),
+      rule.title,
+      `${rule.document} ${rule.article}`,
+      rule.summary,
+      rule.channels.join("；")
+    ]));
+  }
+  table.append(thead, tbody);
+  resultSection.append(summary, table);
+
+  const conclusionSection = reportSection("結論與後續處理");
+  const conclusion = document.createElement("p");
+  conclusion.textContent = "依查詢結果，建議依上表對應之規範與條文進行確認；若屬違規，應依公司檢舉或通報程序辦理，必要時移送法務、稽核或資安等權責單位。";
+  conclusionSection.append(conclusion);
+
+  const note = document.createElement("div");
+  note.className = "report-note";
+  note.textContent = "本報告書僅依中華電信官網公開文件作初步判斷，正式認定仍以公司內部調查、正式條文與權責單位結論為準。";
+
+  const signature = document.createElement("div");
+  signature.className = "report-signature";
+  const author = document.createElement("span");
+  author.textContent = `填表人：${reportAuthor.value.trim() || "＿＿＿＿"}    日期：${reportDate.value || todayISO()}`;
+  const reviewer = document.createElement("span");
+  reviewer.textContent = "覆核：＿＿＿＿";
+  signature.append(author, reviewer);
+
+  doc.append(h3, idLine, meta, behaviorSection, resultSection, conclusionSection, note, signature);
+  reportOutput.replaceChildren(doc);
+  printReportButton.hidden = false;
+}
+
+openReportButton.addEventListener("click", () => {
+  reportPrompt.hidden = true;
+  reportBuilder.hidden = false;
+  reportOutput.replaceChildren();
+  printReportButton.hidden = true;
+  reportDesc.value = lastQuery;
+  if (!reportDate.value) {
+    reportDate.value = todayISO();
+  }
+  reportBuilder.scrollIntoView({ behavior: "smooth", block: "start" });
+});
+
+dismissReportButton.addEventListener("click", () => {
+  reportPrompt.hidden = true;
+});
+
+generateReportButton.addEventListener("click", buildReport);
+
+printReportButton.addEventListener("click", () => {
+  window.print();
+});
 
 function buildCategoryFilters() {
   const categories = [...new Set(window.CHT_POLICIES.map((rule) => rule.category))];
@@ -266,8 +417,13 @@ input.addEventListener("keydown", (event) => {
 clearButton.addEventListener("click", () => {
   input.value = "";
   lastQuery = "";
+  currentMatches = [];
   resultsSection.hidden = true;
   resultList.replaceChildren();
+  reportPrompt.hidden = true;
+  reportBuilder.hidden = true;
+  printReportButton.hidden = true;
+  reportOutput.replaceChildren();
   input.focus();
 });
 

@@ -88,6 +88,55 @@
           </div>
         </div>
         <div id="result-list" class="result-list"></div>
+
+        <div id="report-prompt" class="report-prompt" hidden>
+          <div class="report-prompt-text">
+            <strong>是否依查詢結果擬出相關報告書？</strong>
+            <p>報告書會彙整本次查詢的行為、違反條文與建議處理方式。</p>
+          </div>
+          <div class="report-prompt-actions">
+            <button id="open-report" type="button" class="soft-button">是，擬出報告書</button>
+            <button id="dismiss-report" type="button" class="ghost-button">不需要</button>
+          </div>
+        </div>
+
+        <section id="report-builder" class="report-builder" hidden aria-labelledby="report-title">
+          <div class="panel-heading">
+            <h2 id="report-title">報告書擬稿</h2>
+            <span class="panel-index">02</span>
+          </div>
+          <div class="report-form">
+            <div class="report-field">
+              <label for="report-case">案件名稱</label>
+              <input id="report-case" type="text" value="行為違規查詢案">
+            </div>
+            <div class="report-field">
+              <label for="report-subject">被查詢人</label>
+              <input id="report-subject" type="text" placeholder="姓名或職稱">
+            </div>
+            <div class="report-field">
+              <label for="report-unit">單位 / 職稱</label>
+              <input id="report-unit" type="text" placeholder="例如：採購處 課長">
+            </div>
+            <div class="report-field">
+              <label for="report-date">查詢日期</label>
+              <input id="report-date" type="date">
+            </div>
+            <div class="report-field report-field-wide">
+              <label for="report-desc">行為描述</label>
+              <textarea id="report-desc" rows="4"></textarea>
+            </div>
+            <div class="report-field">
+              <label for="report-author">填表人</label>
+              <input id="report-author" type="text" placeholder="姓名">
+            </div>
+          </div>
+          <div class="report-actions">
+            <button id="generate-report" type="button">產生報告書</button>
+            <button id="print-report" type="button" class="ghost-button" hidden>列印 / 儲存 PDF</button>
+          </div>
+          <div id="report-output" class="report-output"></div>
+        </section>
       </section>
 
       <section class="notice" aria-label="查詢說明">
