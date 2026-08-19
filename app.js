@@ -1,11 +1,17 @@
 const input = document.getElementById("behavior-input");
 const queryButton = document.getElementById("query-button");
 const clearButton = document.getElementById("clear-button");
+const categoryList = document.getElementById("category-list");
+const onlyViolated = document.getElementById("only-violated");
 const resultsSection = document.getElementById("results");
 const summaryTitle = document.getElementById("summary-title");
 const summaryText = document.getElementById("summary-text");
-const summaryIcon = document.getElementById("summary-icon");
 const resultList = document.getElementById("result-list");
+const countViolated = document.getElementById("count-violated");
+const countPossible = document.getElementById("count-possible");
+const countClean = document.getElementById("count-clean");
+
+let lastQuery = "";
 
 const REQUIRED = {
   "trade-secret-leak": ["營業秘密", "商業機密", "機密"],
@@ -88,7 +94,7 @@ function statusLabel(status) {
 function buildRuleElement(match) {
   const { rule } = match;
   const card = document.createElement("article");
-  card.className = "rule-result";
+  card.className = `rule-result ${rule.status}`;
 
   const head = document.createElement("div");
   head.className = "rule-head";
@@ -115,10 +121,6 @@ function buildRuleElement(match) {
   summary.className = "rule-summary";
   summary.textContent = rule.summary;
 
-  const linksHeading = document.createElement("p");
-  linksHeading.className = "rule-doc";
-  linksHeading.textContent = "相關條文與報告書";
-
   const links = document.createElement("ul");
   links.className = "rule-links";
   for (const report of rule.reports) {
@@ -132,6 +134,13 @@ function buildRuleElement(match) {
     links.append(item);
   }
 
+  const linksLabel = document.createElement("div");
+  linksLabel.className = "rule-links-label";
+  const linksHeading = document.createElement("p");
+  linksHeading.className = "rule-doc";
+  linksHeading.textContent = "相關條文與報告書";
+  linksLabel.append(linksHeading, links);
+
   const channelsHeading = document.createElement("p");
   channelsHeading.className = "rule-doc";
   channelsHeading.textContent = "建議處理或通報";
@@ -144,46 +153,49 @@ function buildRuleElement(match) {
     channels.append(item);
   }
 
-  card.append(head, title, doc, summary, linksHeading, links, channelsHeading, channels);
+  card.append(head, title, doc, summary, linksLabel, channelsHeading, channels);
   return card;
 }
 
-function renderNoMatch() {
+function renderNoMatch(filteredOut) {
   const panel = document.createElement("div");
   panel.className = "no-match";
 
   const title = document.createElement("h3");
-  title.textContent = "未發現明確違反項目";
+  title.textContent = filteredOut ? "篩選條件下無符合結果" : "未發現明確違反項目";
 
   const body = document.createElement("p");
-  body.textContent = "目前輸入內容未對應到公開規範中的明確違規要件。可補充職員職務、金額、是否揭露、是否經手文件或是否已通報等細節後再查詢。";
+  body.textContent = filteredOut
+    ? "目前輸入內容有對應規範，但被目前的類別或狀態篩選排除。請調整篩選條件後重新查詢。"
+    : "目前輸入內容未對應到公開規範中的明確違規要件。可補充職員職務、金額、是否揭露、是否經手文件或是否已通報等細節後再查詢。";
 
   panel.append(title, body);
   return panel;
 }
 
-function render(matches, inputText) {
+function render(matches, inputText, filteredOut) {
   resultList.replaceChildren();
 
   const violatedCount = matches.filter((m) => m.rule.status === "violated").length;
   const possibleCount = matches.filter((m) => m.rule.status === "possible").length;
+  const cleanCount = matches.filter((m) => m.rule.status !== "violated" && m.rule.status !== "possible").length;
+  countViolated.textContent = violatedCount;
+  countPossible.textContent = possibleCount;
+  countClean.textContent = cleanCount;
 
   if (violatedCount > 0) {
-    summaryIcon.className = "summary-icon violated";
     summaryTitle.textContent = "查詢結果：發現違反項目";
     summaryText.textContent = `依你描述的行為，對應 ${violatedCount} 項已違反、${possibleCount} 項可能違反之公司規定。`;
   } else if (possibleCount > 0) {
-    summaryIcon.className = "summary-icon possible";
     summaryTitle.textContent = "查詢結果：可能違反";
     summaryText.textContent = `依你描述的行為，對應 ${possibleCount} 項可能違反之公司規定，需視細節確認。`;
   } else {
-    summaryIcon.className = "summary-icon";
     summaryTitle.textContent = "查詢結果：未發現明確違反";
     summaryText.textContent = `輸入：${inputText}`;
   }
 
   if (matches.length === 0) {
-    resultList.append(renderNoMatch());
+    resultList.append(renderNoMatch(filteredOut));
     return;
   }
 
@@ -199,11 +211,43 @@ function runQuery() {
     return;
   }
 
-  const matches = matchRules(value);
+  lastQuery = value;
+  const rawMatches = matchRules(value);
+  let matches = rawMatches;
+  const selectedCategories = new Set(
+    [...document.querySelectorAll("#category-list input:checked")].map((box) => box.value)
+  );
+  matches = matches.filter((match) => selectedCategories.has(match.rule.category));
+  if (onlyViolated.checked) {
+    matches = matches.filter((match) => match.rule.status === "violated");
+  }
   resultsSection.hidden = false;
   resultsSection.scrollIntoView({ behavior: "smooth", block: "start" });
-  render(matches, value);
+  render(matches, value, rawMatches.length > 0 && matches.length === 0);
 }
+
+function buildCategoryFilters() {
+  const categories = [...new Set(window.CHT_POLICIES.map((rule) => rule.category))];
+  categoryList.replaceChildren();
+  for (const category of categories) {
+    const label = document.createElement("label");
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.value = category;
+    checkbox.checked = true;
+    label.append(checkbox, document.createTextNode(category));
+    categoryList.append(label);
+  }
+}
+
+function refreshQuery() {
+  if (!lastQuery) return;
+  input.value = lastQuery;
+  runQuery();
+}
+
+categoryList.addEventListener("change", refreshQuery);
+onlyViolated.addEventListener("change", refreshQuery);
 
 queryButton.addEventListener("click", runQuery);
 
@@ -215,6 +259,7 @@ input.addEventListener("keydown", (event) => {
 
 clearButton.addEventListener("click", () => {
   input.value = "";
+  lastQuery = "";
   resultsSection.hidden = true;
   resultList.replaceChildren();
   input.focus();
@@ -226,3 +271,5 @@ document.querySelectorAll(".example-chip").forEach((chip) => {
     runQuery();
   });
 });
+
+buildCategoryFilters();
