@@ -16,7 +16,7 @@ python3 -m http.server 8000
 
 ## 部署到 GitHub Pages
 
-1. 在 GitHub 建立新 repository，例如 `cht-rule-query`。
+1. 在 GitHub 建立新 repository，名稱設為 `CHT`。
 2. 將本目錄內容推送到 repository：
 
 ```bash
@@ -24,12 +24,12 @@ git init
 git add .
 git commit -m "Add CHT rule query site"
 git branch -M main
-git remote add origin https://github.com/<你的帳號>/cht-rule-query.git
+git remote add origin https://github.com/<你的帳號>/CHT.git
 git push -u origin main
 ```
 
-3. 到 repository 的 Settings → Pages，將 Source 設為 `Deploy from a branch`，Branch 選 `main` 與 `/ (root)`。
-4. 網站完成後即可透過 `https://<你的帳號>.github.io/cht-rule-query/` 使用。
+3. 到 repository 的 Settings → Pages，將 Source 設為 `GitHub Actions`。
+4. Push 後 GitHub Actions 會自動部署，網站完成後即可透過 `https://<你的帳號>.github.io/CHT/` 使用。
 
 ## 資料說明
 
