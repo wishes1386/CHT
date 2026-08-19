@@ -38,7 +38,7 @@ body {
   background-size: 28px 28px;
   color: var(--ink);
   font-family: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", "Inter", sans-serif;
-  line-height: 1.55;
+  line-height: 1.6;
   letter-spacing: 0;
 }
 
@@ -51,8 +51,8 @@ body {
 }
 
 .topbar-inner {
-  width: min(100% - 32px, 1240px);
-  min-height: 78px;
+  width: min(100% - 40px, 1320px);
+  min-height: 86px;
   margin: 0 auto;
   display: flex;
   align-items: center;
@@ -68,8 +68,8 @@ body {
 }
 
 .brand-mark {
-  width: 42px;
-  height: 42px;
+  width: 46px;
+  height: 46px;
   flex: 0 0 auto;
   display: grid;
   place-items: center;
@@ -77,7 +77,7 @@ body {
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.24);
   color: #ffffff;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 800;
   letter-spacing: 0.04em;
 }
@@ -89,7 +89,7 @@ body {
 .brand-text h1 {
   margin: 0;
   color: #ffffff;
-  font-size: 19px;
+  font-size: 22px;
   line-height: 1.3;
   white-space: nowrap;
 }
@@ -97,7 +97,7 @@ body {
 .brand-text p {
   margin: 2px 0 0;
   color: #b7c6d4;
-  font-size: 12px;
+  font-size: 14px;
   white-space: nowrap;
 }
 
@@ -112,13 +112,13 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  min-height: 30px;
-  padding: 0 12px;
+  min-height: 34px;
+  padding: 0 14px;
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.08);
   color: #d8e1ea;
-  font-size: 12px;
+  font-size: 13px;
   white-space: nowrap;
 }
 
@@ -131,12 +131,12 @@ body {
 }
 
 .layout {
-  width: min(100% - 32px, 1240px);
+  width: min(100% - 40px, 1320px);
   margin: 0 auto;
-  padding: 24px 0 44px;
+  padding: 28px 0 52px;
   display: grid;
-  grid-template-columns: 260px minmax(0, 1fr);
-  gap: 20px;
+  grid-template-columns: 284px minmax(0, 1fr);
+  gap: 24px;
   align-items: start;
 }
 
@@ -144,7 +144,7 @@ body {
   position: sticky;
   top: 98px;
   display: grid;
-  gap: 16px;
+  gap: 18px;
 }
 
 .filter-block,
@@ -157,14 +157,14 @@ body {
 }
 
 .filter-block {
-  padding: 18px;
+  padding: 20px;
 }
 
 .filter-block h2,
 .panel-heading h2,
 .result-summary h2 {
   margin: 0;
-  font-size: 14px;
+  font-size: 15px;
   line-height: 1.4;
   font-weight: 800;
   letter-spacing: 0.02em;
@@ -174,8 +174,8 @@ body {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding-bottom: 12px;
-  margin-bottom: 12px;
+  padding-bottom: 14px;
+  margin-bottom: 14px;
   border-bottom: 1px solid var(--line);
 }
 
@@ -197,11 +197,11 @@ body {
   display: flex;
   align-items: center;
   gap: 9px;
-  min-height: 32px;
+  min-height: 34px;
   padding: 3px 6px;
   border-radius: 6px;
   color: var(--ink);
-  font-size: 13px;
+  font-size: 14px;
   cursor: pointer;
 }
 
@@ -219,7 +219,7 @@ body {
 }
 
 .toggle-row {
-  min-height: 38px;
+  min-height: 42px;
 }
 
 .docs-block ul {
@@ -234,9 +234,9 @@ body {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 4px;
+  padding: 10px 4px;
   color: var(--blue);
-  font-size: 13px;
+  font-size: 14px;
   text-decoration: none;
   border-bottom: 1px solid var(--line);
 }
@@ -266,21 +266,21 @@ body {
 }
 
 .query-panel {
-  padding: 22px 24px;
+  padding: 26px 28px;
 }
 
 .panel-heading {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 16px;
+  margin-bottom: 18px;
 }
 
 .panel-heading h2 {
   display: flex;
   align-items: center;
   gap: 9px;
-  font-size: 16px;
+  font-size: 18px;
 }
 
 .panel-heading h2::before {
@@ -294,18 +294,19 @@ body {
 .panel-index {
   color: var(--line-strong);
   font-family: "SFMono-Regular", "Menlo", "Consolas", monospace;
-  font-size: 13px;
+  font-size: 14px;
 }
 
 textarea {
   width: 100%;
-  min-height: 132px;
-  padding: 15px 16px;
+  min-height: 156px;
+  padding: 16px 18px;
   border: 1px solid var(--line-strong);
   border-radius: 8px;
   background: #fbfcfe;
   color: var(--ink);
   font: inherit;
+  font-size: 15px;
   resize: vertical;
   line-height: 1.65;
   box-shadow: inset 0 1px 3px rgba(20, 33, 45, 0.04);
@@ -326,7 +327,7 @@ textarea:focus {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
-  margin-top: 14px;
+  margin-top: 16px;
 }
 
 button {
@@ -339,11 +340,12 @@ button#query-button {
   display: inline-flex;
   align-items: center;
   gap: 9px;
-  min-height: 44px;
-  padding: 0 20px;
+  min-height: 50px;
+  padding: 0 24px;
   border-radius: 8px;
   background: var(--navy);
   color: #ffffff;
+  font-size: 15px;
   font-weight: 700;
   box-shadow: 0 2px 0 rgba(0, 0, 0, 0.16);
 }
@@ -358,12 +360,13 @@ button#query-button svg {
 }
 
 .ghost-button {
-  min-height: 44px;
-  padding: 0 16px;
+  min-height: 50px;
+  padding: 0 20px;
   border: 1px solid var(--line-strong);
   border-radius: 8px;
   background: var(--surface);
   color: var(--ink);
+  font-size: 15px;
 }
 
 .ghost-button:hover {
@@ -375,25 +378,25 @@ button#query-button svg {
   flex-wrap: wrap;
   align-items: center;
   gap: 8px;
-  margin-top: 20px;
-  padding-top: 16px;
+  margin-top: 24px;
+  padding-top: 20px;
   border-top: 1px dashed var(--line);
 }
 
 .examples-label {
   color: var(--muted);
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
 }
 
 .example-chip {
-  min-height: 32px;
-  padding: 0 13px;
+  min-height: 38px;
+  padding: 0 15px;
   border: 1px solid var(--line);
   border-radius: 999px;
   background: var(--surface);
   color: var(--ink);
-  font-size: 12px;
+  font-size: 13px;
   transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
 }
 
@@ -404,7 +407,7 @@ button#query-button svg {
 }
 
 .results {
-  padding: 22px 24px;
+  padding: 26px 28px;
 }
 
 .result-summary {
@@ -412,18 +415,18 @@ button#query-button svg {
   align-items: flex-start;
   justify-content: space-between;
   gap: 16px;
-  padding-bottom: 18px;
+  padding-bottom: 20px;
   border-bottom: 1px solid var(--line);
 }
 
 .result-summary h2 {
-  font-size: 16px;
+  font-size: 18px;
 }
 
 .result-summary p {
   margin: 5px 0 0;
   color: var(--muted);
-  font-size: 13px;
+  font-size: 14px;
 }
 
 .count-strip {
@@ -435,8 +438,8 @@ button#query-button svg {
 .count-item {
   position: relative;
   display: grid;
-  min-width: 84px;
-  min-height: 58px;
+  min-width: 94px;
+  min-height: 66px;
   align-content: center;
   text-align: center;
   border: 1px solid var(--line);
@@ -446,13 +449,13 @@ button#query-button svg {
 }
 
 .count-item strong {
-  font-size: 20px;
+  font-size: 23px;
   line-height: 1.2;
   font-variant-numeric: tabular-nums;
 }
 
 .count-item span {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--muted);
 }
 
@@ -481,19 +484,19 @@ button#query-button svg {
 }
 
 .result-list {
-  margin-top: 16px;
+  margin-top: 18px;
   display: grid;
-  gap: 12px;
+  gap: 14px;
 }
 
 .rule-result {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
-  gap: 8px 20px;
+  gap: 10px 24px;
   border: 1px solid var(--line);
   border-left: 4px solid var(--line-strong);
   border-radius: 8px;
-  padding: 16px 18px;
+  padding: 18px 20px;
   background: #fcfdfe;
   transition: box-shadow 0.15s ease, transform 0.15s ease;
 }
@@ -522,10 +525,10 @@ button#query-button svg {
 .status-badge {
   display: inline-flex;
   align-items: center;
-  min-height: 25px;
-  padding: 0 10px;
+  min-height: 28px;
+  padding: 0 12px;
   border-radius: 999px;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 800;
   white-space: nowrap;
 }
@@ -553,7 +556,7 @@ button#query-button svg {
 .rule-title {
   width: 100%;
   margin: 9px 0 0;
-  font-size: 15px;
+  font-size: 17px;
   line-height: 1.45;
   letter-spacing: 0;
 }
@@ -561,7 +564,7 @@ button#query-button svg {
 .rule-doc {
   margin: 4px 0 0;
   color: var(--muted);
-  font-size: 12px;
+  font-size: 13px;
 }
 
 .rule-doc .doc-name {
@@ -577,7 +580,7 @@ button#query-button svg {
 .rule-summary {
   margin: 10px 0 0;
   color: #3b4855;
-  font-size: 13px;
+  font-size: 14px;
   max-width: 78ch;
 }
 
@@ -598,13 +601,13 @@ button#query-button svg {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  min-height: 29px;
-  padding: 0 11px;
+  min-height: 33px;
+  padding: 0 13px;
   border: 1px solid var(--line);
   border-radius: 999px;
   color: var(--blue);
   text-decoration: none;
-  font-size: 12px;
+  font-size: 13px;
   background: var(--surface);
   transition: border-color 0.15s ease, background 0.15s ease;
 }
@@ -631,7 +634,7 @@ button#query-button svg {
   position: relative;
   padding-left: 13px;
   color: var(--muted);
-  font-size: 12px;
+  font-size: 13px;
 }
 
 .rule-channels li::before {
@@ -649,7 +652,7 @@ button#query-button svg {
   grid-column: 2;
   grid-row: 1 / span 4;
   align-self: start;
-  min-width: 142px;
+  min-width: 158px;
   margin-top: 2px;
   padding-left: 14px;
   border-left: 1px solid var(--line);
@@ -675,9 +678,9 @@ button#query-button svg {
 
 .notice {
   color: var(--muted);
-  font-size: 12px;
+  font-size: 14px;
   text-align: center;
-  padding: 4px 8px;
+  padding: 6px 8px;
 }
 
 .report-prompt {
@@ -694,13 +697,13 @@ button#query-button svg {
 }
 
 .report-prompt-text strong {
-  font-size: 14px;
+  font-size: 15px;
 }
 
 .report-prompt-text p {
   margin: 4px 0 0;
   color: var(--muted);
-  font-size: 12px;
+  font-size: 13px;
 }
 
 .report-prompt-actions,
@@ -713,12 +716,13 @@ button#query-button svg {
 .soft-button {
   display: inline-flex;
   align-items: center;
-  min-height: 40px;
-  padding: 0 16px;
+  min-height: 46px;
+  padding: 0 18px;
   border: 1px solid var(--navy);
   border-radius: 8px;
   background: var(--navy);
   color: #ffffff;
+  font-size: 14px;
   font-weight: 700;
 }
 
@@ -727,8 +731,8 @@ button#query-button svg {
 }
 
 .report-builder {
-  margin-top: 16px;
-  padding: 20px;
+  margin-top: 18px;
+  padding: 24px;
   border: 1px solid var(--line);
   border-radius: 10px;
   background: var(--surface);
@@ -752,25 +756,25 @@ button#query-button svg {
 
 .report-field label {
   color: var(--muted);
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
 }
 
 .report-field input,
 .report-field textarea {
   width: 100%;
-  min-height: 40px;
-  padding: 9px 11px;
+  min-height: 44px;
+  padding: 10px 12px;
   border: 1px solid var(--line-strong);
   border-radius: 6px;
   background: #fbfcfe;
   color: var(--ink);
   font: inherit;
-  font-size: 13px;
+  font-size: 14px;
 }
 
 .report-field textarea {
-  min-height: 84px;
+  min-height: 96px;
   resize: vertical;
 }
 
@@ -788,11 +792,12 @@ button#query-button svg {
 button#generate-report {
   display: inline-flex;
   align-items: center;
-  min-height: 42px;
-  padding: 0 18px;
+  min-height: 48px;
+  padding: 0 20px;
   border-radius: 8px;
   background: var(--teal);
   color: #ffffff;
+  font-size: 14px;
   font-weight: 700;
 }
 
@@ -807,13 +812,13 @@ button#generate-report:hover {
 }
 
 .report-document {
-  max-width: 820px;
+  max-width: 900px;
   margin: 0 auto;
-  padding: 34px 40px 30px;
+  padding: 40px 48px 34px;
   background: #ffffff;
   border: 1px solid var(--line-strong);
   border-radius: 6px;
-  font-size: 13px;
+  font-size: 14px;
   color: var(--ink);
 }
 
@@ -826,28 +831,28 @@ button#generate-report:hover {
 }
 
 .report-letterhead-mark {
-  width: 46px;
-  height: 46px;
+  width: 52px;
+  height: 52px;
   flex: 0 0 auto;
   display: grid;
   place-items: center;
   background: var(--navy);
   color: #ffffff;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 800;
   border-radius: 8px;
 }
 
 .report-letterhead h3 {
   margin: 0;
-  font-size: 20px;
+  font-size: 23px;
   letter-spacing: 0.04em;
 }
 
 .report-letterhead p {
   margin: 2px 0 0;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 12px;
   text-transform: uppercase;
   letter-spacing: 0.08em;
 }
@@ -862,7 +867,7 @@ button#generate-report:hover {
   border: 1px solid var(--line);
   border-radius: 6px;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .report-info-table {
@@ -870,7 +875,7 @@ button#generate-report:hover {
   border-collapse: collapse;
   margin-top: 14px;
   table-layout: fixed;
-  font-size: 12px;
+  font-size: 14px;
 }
 
 .report-info-table th {
@@ -900,7 +905,7 @@ button#generate-report:hover {
   padding: 8px 10px;
   background: var(--navy);
   color: #ffffff;
-  font-size: 14px;
+  font-size: 16px;
   border-radius: 6px;
   letter-spacing: 0.02em;
 }
@@ -930,7 +935,7 @@ button#generate-report:hover {
   table-layout: fixed;
   border-collapse: collapse;
   margin-top: 10px;
-  font-size: 11px;
+  font-size: 13px;
 }
 
 .violation-table th {
@@ -948,6 +953,11 @@ button#generate-report:hover {
   overflow-wrap: anywhere;
 }
 
+.violation-table th:first-child,
+.violation-table td:first-child {
+  width: 90px;
+}
+
 .violation-table tbody tr:nth-child(even) {
   background: #f8fafc;
 }
@@ -955,10 +965,10 @@ button#generate-report:hover {
 .report-status {
   display: inline-flex;
   align-items: center;
-  min-height: 22px;
-  padding: 0 8px;
+  min-height: 25px;
+  padding: 0 10px;
   border-radius: 999px;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 800;
   white-space: nowrap;
 }
@@ -984,7 +994,7 @@ button#generate-report:hover {
   border-left: 4px solid var(--amber);
   background: var(--amber-soft);
   color: #6b4a12;
-  font-size: 12px;
+  font-size: 13px;
   border-radius: 0 6px 6px 0;
 }
 
@@ -1003,7 +1013,7 @@ button#generate-report:hover {
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px 28px;
   flex: 1;
-  font-size: 12px;
+  font-size: 14px;
 }
 
 .report-signature span {
@@ -1013,13 +1023,13 @@ button#generate-report:hover {
 .report-seal {
   display: grid;
   place-items: center;
-  width: 88px;
-  height: 88px;
+  width: 96px;
+  height: 96px;
   flex: 0 0 auto;
   border: 2px dashed var(--line-strong);
   border-radius: 8px;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .sr-only {
@@ -1064,20 +1074,24 @@ button#generate-report:hover {
 @media (max-width: 640px) {
   .topbar-inner,
   .layout {
-    width: min(100% - 20px, 1240px);
+    width: min(100% - 20px, 1320px);
   }
 
   .brand-text h1 {
-    font-size: 16px;
+    font-size: 18px;
   }
 
   .brand-text p {
-    font-size: 11px;
+    font-size: 13px;
   }
 
   .query-panel,
   .results {
-    padding: 16px;
+    padding: 18px;
+  }
+
+  .report-builder {
+    padding: 18px;
   }
 
   .result-summary {
@@ -1139,7 +1153,7 @@ button#generate-report:hover {
   }
 
   .report-document {
-    padding: 20px 16px;
+    padding: 24px 18px;
   }
 
   .report-document .report-meta,
