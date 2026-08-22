@@ -186,6 +186,18 @@ test("排序：同嚴重度時命中數多者在前", () => {
   }
 });
 
+test("排序：語意比對覆寫為 possible 時排於已違反之後", () => {
+  const { compareMatches } = matcher;
+  const violated = { rule: { status: "violated", severity: "最高" }, status: "violated", hits: 1 };
+  const semanticPossible = { rule: { status: "violated", severity: "最高" }, status: "possible", hits: 0, source: "semantic" };
+  const possible = { rule: { status: "possible", severity: "中" }, status: "possible", hits: 2 };
+  const list = [possible, semanticPossible, violated];
+  list.sort(compareMatches);
+  assert.equal(list[0], violated, "已違反（關鍵字命中）應排最前");
+  assert.equal(list[1], semanticPossible, "語意覆寫為 possible 者應排在已違反之後（同為 possible 時依嚴重度）");
+  assert.equal(list[2], possible);
+});
+
 test("法令層：重點規則具備對應法令條目", () => {
   const expected = {
     "insider-trading": ["證券交易法"],

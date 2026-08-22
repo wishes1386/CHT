@@ -849,40 +849,6 @@ button#query-button svg {
   line-height: 1.7;
 }
 
-/* 最近查詢 */
-.history-list {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  margin-top: 4px;
-}
-
-.history-chip {
-  display: block;
-  width: 100%;
-  text-align: left;
-  padding: 7px 10px;
-  border: 1px solid var(--line);
-  border-radius: 6px;
-  background: var(--surface);
-  color: #3b4855;
-  font-size: 13px;
-  cursor: pointer;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  transition: border-color 0.15s ease, background 0.15s ease;
-}
-
-.history-chip:hover {
-  border-color: var(--teal);
-  background: var(--teal-soft);
-}
-
-.history-block .ghost-button {
-  margin-top: 8px;
-}
-
 /* 匯出按鈕 */
 .export-actions {
   display: flex;
@@ -1593,7 +1559,8 @@ button#generate-report:hover {
   .report-prompt,
   .report-builder .report-form,
   .report-builder .report-actions,
-  .notice {
+  .notice,
+  .maint-panel {
     display: none !important;
   }
 

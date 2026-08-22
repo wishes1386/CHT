@@ -19,8 +19,6 @@ const ruleCount = document.getElementById("rule-count");
 const dataVersion = document.getElementById("data-version");
 const exportCsvButton = document.getElementById("export-csv");
 const exportJsonButton = document.getElementById("export-json");
-const historyList = document.getElementById("history-list");
-const clearHistoryButton = document.getElementById("clear-history");
 const runMaintenanceButton = document.getElementById("run-maintenance");
 const maintPanel = document.getElementById("maint-panel");
 const maintClose = document.getElementById("maint-close");
@@ -164,7 +162,7 @@ function statutesFor(rule) {
 function buildRuleElement(match) {
   const { rule } = match;
   const card = document.createElement("article");
-  card.className = `rule-result ${rule.status}`;
+  card.className = `rule-result ${match.status}`;
 
   const head = document.createElement("div");
   head.className = "rule-head";
@@ -174,8 +172,8 @@ function buildRuleElement(match) {
   category.textContent = rule.category;
 
   const badge = document.createElement("span");
-  badge.className = `status-badge ${rule.status}`;
-  badge.textContent = statusLabel(rule.status);
+  badge.className = `status-badge ${match.status}`;
+  badge.textContent = statusLabel(match.status);
 
   head.append(category, badge);
   if (rule.severity) {
@@ -278,7 +276,7 @@ function buildRuleElement(match) {
   }
 
   let hint = null;
-  if (rule.status === "possible") {
+  if (match.status === "possible") {
     hint = document.createElement("p");
     hint.className = "possible-hint";
     hint.textContent = "此項屬「可能違反」，需確認金額、是否揭露、是否經主管同意、是否通報等細節後再行認定。";
@@ -346,9 +344,9 @@ function render(matches, inputText, filteredOut) {
   reportBuilder.hidden = true;
   printReportButton.hidden = true;
 
-  const violatedCount = matches.filter((m) => m.rule.status === "violated").length;
-  const possibleCount = matches.filter((m) => m.rule.status === "possible").length;
-  const cleanCount = matches.filter((m) => m.rule.status !== "violated" && m.rule.status !== "possible").length;
+  const violatedCount = matches.filter((m) => m.status === "violated").length;
+  const possibleCount = matches.filter((m) => m.status === "possible").length;
+  const cleanCount = matches.filter((m) => m.status !== "violated" && m.status !== "possible").length;
   countViolated.textContent = violatedCount;
   countPossible.textContent = possibleCount;
   countClean.textContent = cleanCount;
@@ -394,13 +392,12 @@ async function runQuery() {
     );
     matches = matches.filter((match) => selectedCategories.has(match.rule.category));
     if (onlyViolated.checked) {
-      matches = matches.filter((match) => match.rule.status === "violated");
+      matches = matches.filter((match) => match.status === "violated");
     }
     resultsSection.hidden = false;
     resultsSection.scrollIntoView({ behavior: "smooth", block: "start" });
     render(matches, value, rawMatches.length > 0 && matches.length === 0);
     currentMatches = matches;
-    addHistory(value);
     updateShareHash(value);
   } finally {
     queryButton.disabled = false;
@@ -535,7 +532,7 @@ function buildReport() {
     statutesTd.textContent = statutes.length
       ? statutes.map((s) => `${s.name} ${s.article}`).join("；")
       : "—";
-    tr.append(statusCell(rule.status), titleTd, severityTd, docTd, reasonTd, actionTd, statutesTd);
+    tr.append(statusCell(match.status), titleTd, severityTd, docTd, reasonTd, actionTd, statutesTd);
     tbody.append(tr);
   }
   table.append(thead, tbody);
@@ -667,58 +664,6 @@ function queryFromHash() {
   }
 }
 
-/* 最近查詢（localStorage，僅存本機） */
-const HISTORY_KEY = "cht-query-history";
-const HISTORY_MAX = 10;
-
-function readHistory() {
-  try {
-    const raw = localStorage.getItem(HISTORY_KEY);
-    const list = raw ? JSON.parse(raw) : [];
-    return Array.isArray(list) ? list.filter((item) => typeof item === "string") : [];
-  } catch (error) {
-    return [];
-  }
-}
-
-function writeHistory(list) {
-  try {
-    localStorage.setItem(HISTORY_KEY, JSON.stringify(list));
-  } catch (error) {
-    // 隱私模式或停用儲存時靜默忽略
-  }
-}
-
-function addHistory(query) {
-  const list = readHistory().filter((q) => q !== query);
-  list.unshift(query);
-  writeHistory(list.slice(0, HISTORY_MAX));
-  renderHistory();
-}
-
-function renderHistory() {
-  const list = readHistory();
-  historyList.replaceChildren();
-  clearHistoryButton.hidden = list.length === 0;
-  for (const q of list) {
-    const chip = document.createElement("button");
-    chip.type = "button";
-    chip.className = "history-chip";
-    chip.textContent = q;
-    chip.title = q;
-    chip.addEventListener("click", () => {
-      input.value = q;
-      void runQuery();
-    });
-    historyList.append(chip);
-  }
-}
-
-clearHistoryButton.addEventListener("click", () => {
-  writeHistory([]);
-  renderHistory();
-});
-
 /* 維護檢查：法令條號／適用性與資料完整性 */
 const MAINT_LEVEL_LABEL = { pass: "通過", warn: "注意", fail: "失敗" };
 
@@ -795,7 +740,7 @@ function exportRows() {
   return currentMatches.map((m) => {
     const { rule } = m;
     return [
-      statusLabel(rule.status),
+      statusLabel(m.status),
       rule.severity,
       rule.title,
       rule.document,
@@ -821,7 +766,7 @@ exportJsonButton.addEventListener("click", () => {
     generatedAt: new Date().toISOString(),
     matches: currentMatches.map((m) => ({
       ruleId: m.rule.id,
-      status: m.rule.status,
+      status: m.status,
       severity: m.rule.severity,
       title: m.rule.title,
       document: m.rule.document,
@@ -886,5 +831,3 @@ if (window.CHT_DATA_META) {
   const meta = window.CHT_DATA_META;
   dataVersion.textContent = `規則資料 v${meta.version}（${meta.reviewedAt} 校對）`;
 }
-
-renderHistory();

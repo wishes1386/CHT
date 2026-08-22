@@ -147,10 +147,11 @@
 
   const SEVERITY_RANK = { "最高": 3, "高": 2, "中": 1 };
 
-  /* 排序：狀態（已違反優先）→ 嚴重度 → 命中數／語意分數 */
+  /* 排序：狀態（已違反優先）→ 嚴重度 → 命中數／語意分數
+   * 狀態以 match.status 為準（語意比對可覆寫為 possible） */
   function compareMatches(a, b) {
-    if (a.rule.status !== b.rule.status) {
-      return a.rule.status === "violated" ? -1 : 1;
+    if (a.status !== b.status) {
+      return a.status === "violated" ? -1 : 1;
     }
     const sa = SEVERITY_RANK[a.rule.severity] || 0;
     const sb = SEVERITY_RANK[b.rule.severity] || 0;
