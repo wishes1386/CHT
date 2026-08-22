@@ -1,0 +1,10 @@
+{
+  "name": "cht-rule-query",
+  "version": "1.0.0",
+  "private": true,
+  "description": "中華電信規範違規查詢（靜態網站 + 比對引擎單元測試）",
+  "scripts": {
+    "test": "node --test",
+    "check:links": "node scripts/check-links.js"
+  }
+}
